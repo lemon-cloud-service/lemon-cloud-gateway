@@ -9,6 +9,7 @@ import (
 	"github.com/lemon-cloud-service/lemon-cloud-gateway/plugins"
 	_ "github.com/micro/cli/v2"
 	"github.com/micro/go-micro/v2"
+	"github.com/micro/micro/v2/api"
 	"github.com/micro/micro/v2/cmd"
 	"os"
 )
@@ -45,10 +46,11 @@ func SystemStart() {
 
 	// 初始化各种插件，然后启动micro的命令行组件
 	plugins.Init()
-	fullName := fmt.Sprintf("%v.%v", manager.ConfigManagerInstance().GeneralConfig().Service.Namespace, define.GetServiceBaseInfo().ServiceKey)
-	address := fmt.Sprintf(":%d", manager.ConfigManagerInstance().GeneralConfig().Service.Port)
+	api.Name = fmt.Sprintf("%v.%v", manager.ConfigManagerInstance().GeneralConfig().Service.Namespace, define.GetServiceBaseInfo().ServiceKey)
+	api.Address = fmt.Sprintf(":%d", manager.ConfigManagerInstance().GatewayConfig().Gateway.Server.HttpPort)
+	svcAddress := fmt.Sprintf(":%d", manager.ConfigManagerInstance().GeneralConfig().Service.Port)
 	cmd.Init(
-		micro.Name(fullName),
-		micro.Registry(lccc_core.CoreService().GenerateMicroRegistry(manager.ConfigManagerInstance().GeneralConfig())),
-		micro.Address(address))
+		micro.Version(define.SYSTEM_INFO_VERSION),
+		micro.Address(svcAddress),
+		micro.Registry(lccc_core.CoreService().GenerateMicroRegistry(manager.ConfigManagerInstance().GeneralConfig())))
 }

@@ -4,11 +4,13 @@ import (
 	"github.com/lemon-cloud-service/lemon-cloud-common/lemon-cloud-common-components/lccc_define"
 	"github.com/lemon-cloud-service/lemon-cloud-common/lemon-cloud-common-components/lccc_model"
 	"github.com/lemon-cloud-service/lemon-cloud-common/lemon-cloud-common-utils/lccu_config"
+	"github.com/lemon-cloud-service/lemon-cloud-gateway/define"
 	"sync"
 )
 
 type ConfigManager struct {
 	generalConfig *lccc_model.GeneralConfig
+	gatewayConfig *define.GatewayConfig
 }
 
 var configManagerInstance *ConfigManager
@@ -24,8 +26,11 @@ func ConfigManagerInstance() *ConfigManager {
 func (cm *ConfigManager) Init() error {
 	if !cm.InitializationStatus() {
 		cm.generalConfig = &lccc_model.GeneralConfig{}
-		err := lccu_config.LoadYamlConfigFile(lccc_define.FILE_PATH_GENERAL_CONFIG_FILE, cm.generalConfig)
-		if err != nil {
+		cm.gatewayConfig = &define.GatewayConfig{}
+		if err := lccu_config.LoadYamlConfigFile(lccc_define.FILE_PATH_GENERAL_CONFIG_FILE, cm.generalConfig); err != nil {
+			return err
+		}
+		if err := lccu_config.LoadYamlConfigFile(lccc_define.FILE_PATH_GENERAL_CONFIG_FILE, cm.gatewayConfig); err != nil {
 			return err
 		}
 	}
@@ -34,6 +39,10 @@ func (cm *ConfigManager) Init() error {
 
 func (cm *ConfigManager) GeneralConfig() *lccc_model.GeneralConfig {
 	return cm.generalConfig
+}
+
+func (cm *ConfigManager) GatewayConfig() *define.GatewayConfig {
+	return cm.gatewayConfig
 }
 
 func (cm *ConfigManager) InitializationStatus() bool {

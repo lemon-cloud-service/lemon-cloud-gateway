@@ -9,4 +9,8 @@ service:
   secret_id: none
   secret_key: none
   override_host: localhost
-  port: 32000
+  port: 32100
+
+gateway:
+  server:
+    http_port: 32000
